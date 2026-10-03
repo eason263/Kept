@@ -60,6 +60,26 @@ to the laser portrait.
 The bag (`src/lib/bag.tsx`) persists in localStorage and shows in the navbar. Client navigations
 play a title-card curtain (`PageCurtain`); same-page hash links stay smooth-scrolled (`SmartLink`).
 
+## Deploy
+
+Vercel runs Next.js with zero config — no `vercel.json` and no environment variables needed.
+Node 20.9+ is required (pinned in `package.json` `engines` and `.nvmrc`).
+
+**Option A — from GitHub (recommended: every push gets a preview link)**
+
+1. Create an empty repo on GitHub, then in this folder:
+   `git remote add origin <repo-url>` and `git push -u origin main`.
+2. Go to vercel.com/new, import the repo. Framework preset: Next.js. Leave everything else as is.
+3. Deploy. The URL works on any phone — use it to test on real devices (especially iPhone Safari).
+
+**Option B — straight from this machine**
+
+1. `npx vercel` — log in, accept the defaults. This creates a preview deployment.
+2. `npx vercel --prod` when you're happy with it.
+
+Before a public launch: replace the Unsplash demo photos, and note that checkout isn't wired to a
+backend yet (see below).
+
 ## Placeholders to replace before launch
 
 - **Photos** come from Unsplash (`src/lib/photos.ts`) — swap for real product and customer photos.
