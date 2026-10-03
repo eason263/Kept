@@ -38,6 +38,28 @@ function Result({ answers, onReset }: { answers: number[]; onReset: () => void }
   const accent = ACCENTS[profile.accent];
   const code = `0${answers.map((a) => a + 1).join("")}`;
   const first = GIFTS[profile.gifts[0]];
+  const [shared, setShared] = useState<"idle" | "copied" | "failed">("idle");
+
+  // The link unfurls into a profile card (see app/share/[profile]/[name]).
+  const share = async () => {
+    const url = `${window.location.origin}/share/${profile.id}/${encodeURIComponent(n.hasName ? n.name : "them")}`;
+    const title = `${n.hasName ? `${n.name} is` : "They’re"} ${profile.name}`;
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title, text: `${title} — find their gift on kept.`, url });
+        return;
+      } catch (err) {
+        // Closing the share sheet is a choice, not an error. Anything else: copy instead.
+        if (err instanceof DOMException && err.name === "AbortError") return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShared("copied");
+    } catch {
+      setShared("failed");
+    }
+  };
 
   return (
     <motion.div
@@ -95,11 +117,26 @@ function Result({ answers, onReset }: { answers: number[]; onReset: () => void }
             See the {first.name.toLowerCase()} <Arrow />
           </Link>
         </Magnetic>
+        <button
+          type="button"
+          onClick={share}
+          data-cursor="cta"
+          className="display inline-flex items-center gap-3 rounded-full border-2 border-ink px-7 py-[0.9rem] text-[1.45rem] transition-colors hover:bg-ink hover:text-paper"
+        >
+          {shared === "copied" ? "Link copied" : "Share this profile"}
+          <Arrow direction="up-right" />
+        </button>
         <button type="button" onClick={onReset} className="underline decoration-ink/30 decoration-2 underline-offset-[6px]">
           Retake the quiz
         </button>
       </div>
-      <p className="hand mt-6 text-center text-[1.9rem]">screenshot it. send it to the group chat.</p>
+      <p className="hand mt-6 text-center text-[1.9rem]" aria-live="polite">
+        {shared === "copied"
+          ? "paste it in the group chat — it turns into a card."
+          : shared === "failed"
+            ? "couldn’t copy the link — screenshot it instead."
+            : "send it to the group chat. it turns into a card."}
+      </p>
     </motion.div>
   );
 }

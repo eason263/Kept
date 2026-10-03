@@ -9,6 +9,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { PageCurtain } from "@/components/layout/PageCurtain";
 import { Providers } from "@/components/layout/Providers";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { socialMeta } from "@/lib/meta";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -38,11 +39,10 @@ const fredoka = Fredoka({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "kept. — birthday gifts they’ll actually keep",
-  description:
-    "Laser portraits, fridge magnets, photo keychains and cake toppers made from your photos and inside jokes. Tell us whose birthday it is.",
-};
+export const metadata: Metadata = socialMeta(
+  "kept. — birthday gifts they’ll actually keep",
+  "Laser portraits, fridge magnets, photo keychains and cake toppers made from your photos and inside jokes. Tell us whose birthday it is.",
+);
 
 export const viewport: Viewport = {
   themeColor: "#f1e8da",
