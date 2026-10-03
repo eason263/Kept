@@ -1,0 +1,431 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────────
+   Tokens — see DESIGN.md §2
+   ────────────────────────────────────────────────────────────── */
+
+/* Registered so the per-section accent can transition. */
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ff6b1c;
+}
+@property --accent-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1b1816;
+}
+
+:root {
+  --frosting: #f1e8da;
+  --paper: #fbf7f0;
+  --ink: #1b1816;
+  --smudge: #8a847b;
+  --rule: #d9cfc0;
+
+  --blue: #2747ff;
+  --cherry: #e3282f;
+  --acid: #c9f23d;
+  --bubble: #ff9acb;
+  --tangerine: #ff6b1c;
+
+  --maple: #e2c29a;
+  --walnut: #8a5a36;
+  --burn: #3a2416;
+
+  --accent: #ff6b1c;
+  --accent-ink: #1b1816;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-obj: 0 1px 2px rgb(27 24 22 / 0.12), 0 18px 30px -12px rgb(27 24 22 / 0.38);
+  --shadow-lift: 0 2px 4px rgb(27 24 22 / 0.1), 0 34px 50px -18px rgb(27 24 22 / 0.5);
+
+  transition:
+    --accent 0.8s var(--ease-out),
+    --accent-ink 0.8s var(--ease-out);
+}
+
+@theme inline {
+  --color-frosting: var(--frosting);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-smudge: var(--smudge);
+  --color-rule: var(--rule);
+  --color-blue: var(--blue);
+  --color-cherry: var(--cherry);
+  --color-acid: var(--acid);
+  --color-bubble: var(--bubble);
+  --color-tangerine: var(--tangerine);
+  --color-maple: var(--maple);
+  --color-walnut: var(--walnut);
+  --color-burn: var(--burn);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-martian), ui-monospace, monospace;
+  --font-hand: var(--font-reenie), cursive;
+  --font-magnet: var(--font-fredoka), ui-rounded, system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Base
+   ────────────────────────────────────────────────────────────── */
+
+html {
+  background: var(--frosting);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  background: var(--frosting);
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+/* Paper grain over everything — static, painted once. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Custom cursor replaces the native one only on fine pointers, once mounted. */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+html.has-cursor input[type="text"],
+html.has-cursor input[type="email"] {
+  cursor: text !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Type roles
+   ────────────────────────────────────────────────────────────── */
+
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 75;
+  text-transform: uppercase;
+  line-height: 0.82;
+  letter-spacing: -0.012em;
+}
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-variation-settings: "wdth" 87.5;
+}
+
+@utility hand {
+  font-family: var(--font-hand);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Materials
+   ────────────────────────────────────────────────────────────── */
+
+@utility wood {
+  background-color: var(--maple);
+  background-image:
+    radial-gradient(120% 70% at 25% 20%, rgb(255 255 255 / 0.22), transparent 60%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.006 0.11' numOctaves='4' seed='11'/><feColorMatrix values='0 0 0 0 0.42  0 0 0 0 0.24  0 0 0 0 0.11  1.25 0 0 0 -0.5'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+  background-size:
+    100% 100%,
+    320px 320px;
+}
+
+@utility wood-dark {
+  background-color: var(--walnut);
+  background-image:
+    radial-gradient(120% 70% at 25% 20%, rgb(255 255 255 / 0.14), transparent 60%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.006 0.11' numOctaves='4' seed='3'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.08  0 0 0 0 0.03  1.3 0 0 0 -0.45'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+  background-size:
+    100% 100%,
+    320px 320px;
+}
+
+@utility slate {
+  background-color: #3a3e42;
+  background-image:
+    radial-gradient(120% 70% at 25% 15%, rgb(255 255 255 / 0.12), transparent 60%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='0.7 0.05' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 0.85  0 0 0 0 0.88  0 0 0 0 0.9  0 0 0 0.16 0'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+  background-size:
+    100% 100%,
+    200px 200px;
+}
+
+@utility brass {
+  background: linear-gradient(125deg, #a87632 0%, #f3d58a 24%, #c99a48 44%, #f8e6ad 60%, #b5843a 80%, #e9c97a 100%);
+}
+
+/* Text burned into wood. */
+@utility engraved {
+  color: var(--burn);
+  text-shadow:
+    0 1px 0 rgb(255 240 220 / 0.45),
+    0 -1px 0 rgb(40 20 8 / 0.35);
+  mix-blend-mode: multiply;
+}
+
+@utility steel {
+  background:
+    linear-gradient(115deg, rgb(255 255 255 / 0.55), transparent 35%, rgb(255 255 255 / 0.25) 60%, transparent 80%),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.025) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #e7e6e2, #cfcdc7);
+}
+
+@utility gloss {
+  background: linear-gradient(150deg, rgb(255 255 255 / 0.65) 0%, rgb(255 255 255 / 0.12) 30%, transparent 45%, transparent 80%, rgb(255 255 255 / 0.18) 100%);
+}
+
+@utility shadow-obj {
+  box-shadow: var(--shadow-obj);
+}
+
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Fridge magnet letters (signature element)
+   ────────────────────────────────────────────────────────────── */
+
+.magnet {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-magnet);
+  font-weight: 700;
+  font-variation-settings: "wdth" 112;
+  line-height: 1;
+  text-transform: uppercase;
+  user-select: none;
+}
+.magnet__shade {
+  position: absolute;
+  inset: 0;
+  color: var(--shade);
+  transform: translateY(0.055em);
+  filter: drop-shadow(0 0.1em 0.08em rgb(27 24 22 / 0.3));
+}
+.magnet__face {
+  position: relative;
+  color: transparent;
+  background:
+    linear-gradient(165deg, rgb(255 255 255 / 0.6) 0%, rgb(255 255 255 / 0) 34%),
+    linear-gradient(var(--face), var(--face));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.magnet--ghost .magnet__shade {
+  display: none;
+}
+.magnet--ghost .magnet__face {
+  background: none;
+  -webkit-text-stroke: 2px var(--rule);
+}
+
+/* Desk objects cast a longer shadow while picked up. */
+.shadow-obj {
+  transition: box-shadow 0.3s var(--ease-out);
+}
+.is-lifted .shadow-obj {
+  box-shadow: var(--shadow-lift);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Ambient motion
+   ────────────────────────────────────────────────────────────── */
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(0, -7px, 0) rotate(0.8deg);
+  }
+}
+.float {
+  animation: float var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    transform: scale(1, 1) skewX(0deg);
+  }
+  20% {
+    transform: scale(0.93, 1.06) skewX(2deg);
+  }
+  45% {
+    transform: scale(1.04, 0.95) skewX(-1.5deg);
+  }
+  70% {
+    transform: scale(0.97, 1.04) skewX(1deg);
+  }
+}
+.flicker {
+  transform-box: fill-box;
+  transform-origin: 50% 90%;
+  animation: flicker 1.6s ease-in-out infinite;
+}
+
+@keyframes swing {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.marquee {
+  animation: marquee var(--dur, 40s) linear infinite;
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes burn-in {
+  0% {
+    color: #ff8a3d;
+    text-shadow:
+      0 0 6px #ffb26b,
+      0 0 14px #ff6b1c;
+  }
+  100% {
+    color: var(--burn);
+  }
+}
+.burn-in {
+  animation: burn-in 0.9s var(--ease-out) both;
+}
+
+/* Intro overlay: CSS fallback hides it even if JS never runs. */
+@keyframes intro-fallback {
+  to {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+.intro {
+  animation: intro-fallback 0.3s 4s forwards;
+}
+html.intro-seen .intro {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.star {
+  animation: twinkle var(--dur, 3s) ease-in-out var(--delay, 0s) infinite;
+}
+
+/* Product pages: the object being made, revealed under a moving laser line. */
+@keyframes making-reveal {
+  0% {
+    clip-path: inset(0% 0% 100% 0%);
+  }
+  70%,
+  100% {
+    clip-path: inset(0% 0% 0% 0%);
+  }
+}
+@keyframes making-scan {
+  0% {
+    top: 0%;
+    opacity: 1;
+  }
+  70% {
+    top: 100%;
+    opacity: 1;
+  }
+  71%,
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+.making-reveal {
+  animation: making-reveal 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.making-scan {
+  animation: making-scan 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes tag-swing {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .making-scan {
+    display: none;
+  }
+}
